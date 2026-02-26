@@ -1,21 +1,19 @@
-import express from "express";
+// Another Express server for NGINX reverse proxy demo (ES module syntax)
+import express from 'express';
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send(`Hello from process ${process.pid}`);
+// Log all incoming requests
+app.use((req, res, next) => {
+    console.log(`[server2.js] ${req.method} ${req.url} from ${req.ip}`);
+    next();
+});
+const PORT = 3001;
+
+app.get('/', (req, res) => {
+    res.send('Hello from server2.js on port 3001!');
 });
 
-app.get("/block", (req, res) => {
-  // CPU-blocking operation: calculate a large Fibonacci number
-  function fib(n) {
-    if (n <= 1) return n;
-    return fib(n - 1) + fib(n - 2);
-  }
-  const result = fib(40); // Adjust n for desired CPU load
-  res.send(`Fibonacci(40) = ${result} from process ${process.pid}`);
-});
-
-app.listen(3001, () => {
-  console.log(`Server started on port 3000 (pid: ${process.pid})`);
+app.listen(PORT, () => {
+    console.log(`Server2 running at http://localhost:${PORT}/`);
 });

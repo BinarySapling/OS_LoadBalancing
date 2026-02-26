@@ -1,34 +1,19 @@
-import cluster from "cluster";
-import os from "os";
-import express from "express";
+// Simple Express server for NGINX reverse proxy demo (ES module syntax)
+import express from 'express';
 
-const totalCPUs = os.cpus().length;
+const app = express();
 
-if (cluster.isPrimary) {
-  cluster.schedulingPolicy = cluster.SCHED_NONE;
-  console.log(`Primary process ${process.pid} is running`);
-  console.log(`Forking for ${totalCPUs} CPUs...\n`);
-  for (let i = 0; i < totalCPUs; i++) {
-    cluster.fork();
-  }
+// Log all incoming requests
+app.use((req, res, next) => {
+	console.log(`[server.js] ${req.method} ${req.url} from ${req.ip}`);
+	next();
+});
+const PORT = 3000;
 
-  cluster.on("exit", (worker) => {
-    console.log(`Worker ${worker.process.pid} exited`);
-    console.log("Starting a new worker...")
-    cluster.fork();
-  });
-} else {
-  const app = express();
-  app.get("/", (req, res) => {
-    res.send(`Hello from worker ${process.pid}`);
-  });
+app.get('/', (req, res) => {
+	res.send('Hello from server.js on port 3000!');
+});
 
-  app.listen(3000, () => {
-    console.log(`Worker ${process.pid} started server on port 3000`);
-  });
-  app.get("/block",(req,res)=>{
-    const start = Date.now()
-    while(Date.now() - start<5000){}
-    res.send("CPU BLOCKING")
-  })
-}
+app.listen(PORT, () => {
+	console.log(`Server running at http://localhost:${PORT}/`);
+});
