@@ -11,6 +11,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "autocannon": "^8.0.0",
     "cluster": "^0.7.7",
     "express": "^5.2.1",
     "os": "^0.1.2"

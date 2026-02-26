@@ -14,6 +14,8 @@ if (cluster.isPrimary) {
 
   cluster.on("exit", (worker) => {
     console.log(`Worker ${worker.process.pid} exited`);
+    console.log("Starting a new worker...")
+    cluster.fork();
   });
 } else {
   const app = express();
@@ -24,4 +26,9 @@ if (cluster.isPrimary) {
   app.listen(3000, () => {
     console.log(`Worker ${process.pid} started server on port 3000`);
   });
+  app.get("/block",(req,res)=>{
+    const start = Date.now()
+    while(Date.now() - start<5000){}
+    res.send("CPU BLOCKING")
+  })
 }
